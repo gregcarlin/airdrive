@@ -1,0 +1,23 @@
+{
+  "name": "SummerStorage",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "forever start --minUptime 1000ms --spinSleepTime 5000ms --killSignal=SIGTERM -f -a -l for.log -o out.log -e err.log -c 'nodemon --exitcrash --ignore temp/' ./bin/www",
+    "stop": "forever stopall",
+    "test": "MODE='TEST' mocha"
+  },
+  "dependencies": {
+    "body-parser": "1.15.2",
+    "compression": "1.6.2",
+    "debug": "2.2.0",
+    "ejs": "2.4.2",
+    "express": "4.14.0",
+    "express-minify": "0.2.0",
+    "forever": "0.15.2",
+    "lodash": "4.13.1",
+    "mongodb": "2.1.18",
+    "nodemon": "1.9.2",
+    "serve-favicon": "2.3.0"
+  }
+}
