@@ -31,6 +31,7 @@ var homogenize = function(data) {
  * Renders a page within the generic template.
  */
 module.exports.render = function(page, res, vars) {
+  vars = vars || {};
   _.merge(vars, res.locals);
   express().render(page + '.ejs', vars, function(err, html) {
     if (err) {
