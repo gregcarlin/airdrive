@@ -3,8 +3,6 @@
 var express = require('express');
 var _ = require('lodash');
 
-//var config = require('../configuration.json');
-
 /*
  * Used to convert irregularly specified css and js data into a
  * consistent format.
@@ -18,12 +16,12 @@ var homogenize = function(data) {
       data[i] = {
         url: data[i].url,
         special: (' ' + data[i].special + ' ')
-      }
+      };
     } else {
       data[i] = {
         url: data[i],
         special: ''
-      }
+      };
     }
   }
   return data;

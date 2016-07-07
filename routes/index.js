@@ -1,9 +1,7 @@
 'use strict';
 
 var express = require('express');
-var router = express.Router();
-
-var core = require('./core');
+var router = new express.Router();
 
 // home page
 router.get('/', function(req, res) {
