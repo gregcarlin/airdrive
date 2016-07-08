@@ -1,4 +1,11 @@
 {
     "extends": "google",
-    "installedESLint": true
+    "installedESLint": true,
+    "env": {
+      "node": true
+    },
+    "rules": {
+        "curly": [2, "multi-line"],
+        "no-floating-decimal": 2
+    }
 }
