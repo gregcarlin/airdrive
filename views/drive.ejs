@@ -47,23 +47,62 @@
     <div class="container-fluid main-content">
       <div class="row">
         <div class="col-md-3 favorites">
-          <ul>
-            <li><a href="#">Documents</a></li>
-            <li><a href="#">Photos</a></li>
-            <li><a href="#">Videos</a></li>
+          <ul class="list-group">
+            <li class="list-group-item"><a href="#">Documents</a></li>
+            <li class="list-group-item"><a href="#">Photos</a></li>
+            <li class="list-group-item"><a href="#">Videos</a></li>
           </ul>
         </div>
-        <div class="col-md-6 browser">
-          <ul class="breadcrumbs">
+        <div class="col-md-7 browser">
+          <ol class="breadcrumb">
             <li><a href="#">airDrive</a></li>
             <li><a href="#">Products</a></li>
-            <li><a href="#">Prototype</a></li>
-          </ul>
+            <li class="active">Prototype</li>
+          </ol>
           <div class="files">
+            <div class="file">
+              <a href="#">
+                <span class="fa fa-4x fa-folder"></span>
+                <span class="desc">Folder 1</span>
+              </a>
+            </div>
+            <div class="file">
+              <a href="#">
+                <span class="fa fa-4x fa-folder"></span>
+                <span class="desc">Folder 2</span>
+              </a>
+            </div>
+            <div class="file">
+              <a href="#">
+                <span class="fa fa-4x fa-folder"></span>
+                <span class="desc">Folder 3</span>
+              </a>
+            </div>
+            <div class="file">
+              <a href="#">
+                <span class="fa fa-4x fa-file-text"></span>
+                <span class="desc">Document 1</span>
+              </a>
+            </div>
+            <div class="file">
+              <a href="#">
+                <span class="fa fa-4x fa-file-text"></span>
+                <span class="desc">Document 2</span>
+              </a>
+            </div>
           </div>
         </div>
-        <div class="col-md-3 links">
-          Right
+        <div class="col-md-2 links">
+          <a href="#"><span class="fa fa-plus-circle"></span>Upload</a>
+          <a href="#"><span class="fa fa-plus-circle"></span>New Folder</a>
+          <div class="drag-option">
+            <span class="fa fa-4x fa-fw fa-share-square-o"></span>
+            Drag to share
+          </div>
+          <div class="drag-option">
+            <span class="fa fa-4x fa-fw fa-trash"></span>
+            Drag to trash
+          </div>
         </div>
       </div>
     </div><!-- /.container -->
@@ -74,5 +113,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/21153cb4c1.js"></script>
   </body>
 </html>

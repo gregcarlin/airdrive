@@ -21,30 +21,52 @@ html, body {
 .favorites {
   background-color: #dedede;
 }
-.favorites ul {
-  list-style-type: none;
-  padding-top: 10px;
-}
-.favorites ul li {
-  padding: 5px;
-  font-size: 18px;
-}
 @media (max-width: 991px) {
   .favorites {
     display: none;
   }
 }
+.favorites ul li {
+  background-color: inherit;
+  border: none;
+  font-size: 18px;
+}
 
-.browser ul.breadcrumbs {
-  list-style-type: none;
+.files {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 4px 7px;
 }
-.browser ul.breadcrumbs li {
-  display: inline;
+.file {
+  text-align: center;
+  width: 20%;
+  min-width: 100px;
+  min-height: 100px;
 }
-.browser ul.breadcrumbs li:after {
-  content: ">";
+.file a:hover, .file a:active, .file a:focus {
+  text-decoration: none;
+}
+.file .fa {
+  display: block;
+}
+
+.links {
+  padding-top: 60px;
+}
+.links > * {
+  display: block;
+}
+.links a {
+  margin: 5px;
+}
+.links a .fa {
+  margin-right: 3px;
+}
+.links .drag-option {
+  margin-top: 20px;
+}
+.links .drag-option .fa {
+  display: block;
   margin-left: 5px;
-}
-.browser ul.breadcrumbs li:last-of-type:after {
-  content: "";
 }
