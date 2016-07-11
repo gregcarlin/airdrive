@@ -12,10 +12,16 @@ router.get('/', function(req, res) {
 
 router.post('/login', function(req, res) {
   // TODO handle login
+  res.redirect('/drive');
 });
 
 router.post('/signup', function(req, res) {
   // TODO handle signup
+});
+
+router.get('/signout', function(req, res) {
+  // TODO handle signout
+  res.redirect('/');
 });
 
 router.get('/drive', function(req, res) {

@@ -92,3 +92,11 @@ html, body {
   display: block;
   margin-left: 5px;
 }
+
+label {
+  font-weight: 400;
+  display: block;
+}
+textarea {
+  resize: vertical;
+}
