@@ -23,6 +23,12 @@ var files = {
             },
             'Document 1': {
               type: 'file'
+            },
+            'Document 2': {
+              type: 'file'
+            },
+            'Document 3': {
+              type: 'file'
             }
           }
         }

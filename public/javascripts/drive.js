@@ -64,6 +64,12 @@ $(function() {
       revert: true,
       containment: 'window'
     });
+    $('.folder').droppable({
+      hoverClass: 'drop-hover',
+      drop: function(event, ui) {
+        // TODO put file in folder
+      }
+    });
   };
 
   $.get('/data', function(data) {
@@ -120,11 +126,5 @@ $(function() {
   $('.share').on('drop', function(e, ui) {
     // TODO open share modal
     $('#shareModal').modal();
-  });
-  $('.folder').droppable({
-    hoverClass: 'drop-hover',
-    drop: function(event, ui) {
-      // TODO put file in folder
-    }
   });
 });
