@@ -18,4 +18,9 @@ router.post('/signup', function(req, res) {
   // TODO handle signup
 });
 
+router.get('/drive', function(req, res) {
+  // TODO authenticate user, load user-specific details
+  res.render('drive');
+});
+
 module.exports = router;
