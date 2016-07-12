@@ -71,7 +71,7 @@ $(function() {
 
     $('.files').html('');
     if (current.type == 'directory') {
-      if (current.children.length <= 0) {
+      if (!current.children || current.children.length <= 0) {
         $('.files').html('This folder is empty.');
       } else {
         _.each(current.children, addFile);

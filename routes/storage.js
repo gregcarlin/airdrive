@@ -42,6 +42,18 @@ var files = {
           }
         }
       }
+    },
+    Documents: {
+      type: 'directory',
+      visibility: 'private'
+    },
+    Photos: {
+      type: 'directory',
+      visibility: 'public'
+    },
+    Videos: {
+      type: 'directory',
+      visibility: 'private'
     }
   }
 };
