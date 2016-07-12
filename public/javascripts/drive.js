@@ -45,7 +45,9 @@ $(function() {
       html += '<span class="fa fa-globe fa-stack-1x"></span>';
     }
     html += '</span>';
-    html += '<span class="desc">' + name + '</span>';
+    html += '<span class="desc">';
+    html += name;
+    html += '</span>';
     html += '</a>';
     html += '</div>';
     $('.files').append(html);
@@ -184,10 +186,6 @@ $(function() {
   $('.drag-option').droppable({
     hoverClass: 'drop-hover'
   });
-  $('.trash').on('drop', function(e, ui) {
-    ui.draggable.remove();
-    // TODO tell backend to delete file
-  });
   $('.share').on('drop', function(e, ui) {
     $('#shareModal').modal('show');
     $('#shareModal button[type="submit"]').unbind('click').click(function(e) {
@@ -211,5 +209,22 @@ $(function() {
 
       $('#shareModal').modal('hide');
     });
+  });
+  $('.rename').on('drop', function(e, ui) {
+    $('#renameModal input').val(ui.draggable.find('.desc').html());
+    $('#renameModal').modal('show');
+    $('#renameModal button[type="submit"]').unbind('click').click(function(e) {
+      e.preventDefault();
+
+      // TODO tell backend to rename folder
+      var name = $('#renameModal input').val();
+      ui.draggable.find('.desc').html(name);
+
+      $('#renameModal').modal('hide');
+    });
+  });
+  $('.trash').on('drop', function(e, ui) {
+    ui.draggable.remove();
+    // TODO tell backend to delete file
   });
 });
