@@ -15,6 +15,9 @@ body {
 .navbar-brand:hover {
   color: #CCC;
 }
+.navbar-brand img {
+  display: inline-block;
+}
 
 .main-content {
   padding-top: 51px;
