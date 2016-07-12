@@ -56,7 +56,10 @@ var files = {
         'picture.jpg': {
           type: 'file',
           visibility: 'public',
-          data: ('<img src="data:image/png;base64,' + new Buffer(fs.readFileSync('routes/Lenna.png')).toString('base64') + '" />')
+          data: ('<img src="data:image/png;base64,'
+                 + new Buffer(fs.readFileSync('routes/Lenna.png'))
+                   .toString('base64')
+                 + '" />')
         }
       }
     },

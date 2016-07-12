@@ -1,13 +1,15 @@
+'use strict';
+
 var icons = {
   directory: {
-    'private': 'folder',
-    'public': 'folder-o'
+    private: 'folder',
+    public: 'folder-o'
   },
   file: {
-    'private': 'file-text',
-    'public': 'file-o'
+    private: 'file-text',
+    public: 'file-o'
   }
-}
+};
 
 $(function() {
   var fileData = {};
@@ -31,7 +33,7 @@ $(function() {
   var addFile = function(data, name) {
     var html = '';
     html += '<div class="file';
-    if (data.type == 'directory') html += ' folder';
+    if (data.type === 'directory') html += ' folder';
     html += '">';
     var pathPrefix = rawPath ? (rawPath + '/') : '';
     html += '<a href="#' + pathPrefix + name + '">';
@@ -39,7 +41,7 @@ $(function() {
     html += '<span class="fa fa-stack-2x fa-';
     html += icons[data.type][data.visibility];
     html += '"></span>';
-    if (data.visibility == 'public') {
+    if (data.visibility === 'public') {
       html += '<span class="fa fa-globe fa-stack-1x"></span>';
     }
     html += '</span>';
@@ -60,7 +62,7 @@ $(function() {
     });
     var crumbHtml = '';
     _.each(crumbs, function(crumb, index) {
-      if (index == crumbs.length - 1) {
+      if (index === crumbs.length - 1) {
         crumbHtml += '<li class="active">' + crumb + '</li>';
       } else {
         var link = _.join(_.take(_.tail(crumbs), index), '/');
@@ -69,7 +71,7 @@ $(function() {
     });
     $('.breadcrumb').html(crumbHtml);
 
-    if (current.type == 'directory') {
+    if (current.type === 'directory') {
       if (!current.children || current.children.length <= 0) {
         $('.files').html('<em>This folder is empty.</em>');
       } else {
@@ -120,10 +122,10 @@ $(function() {
 
   var fileLoaded = function(file, progressElement) {
     return function(e) {
-      var data = e.target.result;
+      // var data = e.target.result;
       // TODO actually upload file
       var intervalId = setInterval(function() {
-        var progress = parseInt(progressElement.attr('aria-valuenow'));
+        var progress = parseInt(progressElement.attr('aria-valuenow'), 10);
         if (progress >= 100) {
           // stop the interval
           clearInterval(intervalId);
@@ -143,7 +145,7 @@ $(function() {
           }, file.name);
         } else {
           // randomly advance progress bar
-          progress += 4 + parseInt(Math.random() * 4);
+          progress += 4 + parseInt(Math.random() * 4, 10);
           progressElement.attr('aria-valuenow', progress);
           progressElement.css('width', progress + '%');
           progressElement.html('<span class="sr-only">' + progress + '% Complete</span>');
@@ -177,7 +179,6 @@ $(function() {
       fr.readAsDataURL(files[i]);
     }
   });
-
 
   // Set up droppables
   $('.drag-option').droppable({

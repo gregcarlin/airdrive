@@ -2,10 +2,16 @@
     "extends": "google",
     "installedESLint": true,
     "env": {
-      "node": true
+      "node": true,
+      "browser": true,
+      "jquery": true
+    },
+    "globals": {
+      "_": true
     },
     "rules": {
         "curly": [2, "multi-line"],
-        "no-floating-decimal": 2
+        "no-floating-decimal": 2,
+        "operator-linebreak": ["error", "before"]
     }
 }
