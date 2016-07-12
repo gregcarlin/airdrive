@@ -2,6 +2,7 @@
 
 var express = require('express');
 var router = new express.Router();
+var fs = require('fs');
 
 var files = {
   type: 'directory',
@@ -31,9 +32,10 @@ var files = {
               type: 'file',
               visibility: 'public'
             },
-            'Document 2': {
+            'Document 2.txt': {
               type: 'file',
-              visibility: 'private'
+              visibility: 'private',
+              data: 'Hello world'
             },
             'Document 3': {
               type: 'file',
@@ -49,7 +51,14 @@ var files = {
     },
     Photos: {
       type: 'directory',
-      visibility: 'public'
+      visibility: 'public',
+      children: {
+        'picture.jpg': {
+          type: 'file',
+          visibility: 'public',
+          data: ('<img src="data:image/png;base64,' + new Buffer(fs.readFileSync('routes/Lenna.png')).toString('base64') + '" />')
+        }
+      }
     },
     Videos: {
       type: 'directory',

@@ -25,7 +25,7 @@ $(function() {
     if (!path) return '';
 
     rawPath = path;
-    return 'children.' + path.replace(new RegExp('/', 'g'), '.children.');
+    return '["children"]["' + path.split('/').join('"]["children"]["') + '"]';
   };
 
   var addFile = function(data, name) {
@@ -69,15 +69,16 @@ $(function() {
     });
     $('.breadcrumb').html(crumbHtml);
 
-    $('.files').html('');
     if (current.type == 'directory') {
       if (!current.children || current.children.length <= 0) {
-        $('.files').html('This folder is empty.');
+        $('.files').html('<em>This folder is empty.</em>');
       } else {
+        $('.files').html('');
         _.each(current.children, addFile);
       }
     } else {
-      // TODO file preview/download
+      // TODO actually read file
+      $('.files').html(current.data || '<em>This file is empty.</em>');
     }
 
     // Set up drag and drops for files and folders
