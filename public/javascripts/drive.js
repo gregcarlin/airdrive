@@ -187,7 +187,27 @@ $(function() {
     // TODO tell backend to delete file
   });
   $('.share').on('drop', function(e, ui) {
-    // TODO open share modal
-    $('#shareModal').modal();
+    $('#shareModal').modal('show');
+    $('#shareModal button[type="submit"]').unbind('click').click(function(e) {
+      e.preventDefault();
+      // TODO tell backend to share file
+
+      var stack = ui.draggable.find('.fa-stack');
+      var icons = stack.children();
+      // if not already public/shared
+      if (icons.length < 2) {
+        var icon = icons.first();
+        if (icon.hasClass('fa-folder')) {
+          icon.removeClass('fa-folder');
+          icon.addClass('fa-folder-o');
+        } else {
+          icon.removeClass('fa-file-text');
+          icon.addClass('fa-file-o');
+        }
+        stack.append('<span class="fa fa-globe fa-stack-1x"></span>');
+      }
+
+      $('#shareModal').modal('hide');
+    });
   });
 });
