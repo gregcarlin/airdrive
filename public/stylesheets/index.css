@@ -1,9 +1,19 @@
 html, body {
   height: 100%;
 }
+body {
+  background-image: url('/images/balloon.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #EEE;
+}
 
 .navbar-brand {
   font-size: 32px;
+  color: #EEE;
+}
+.navbar-brand:hover {
+  color: #CCC;
 }
 
 .main-content {
@@ -15,10 +25,15 @@ html, body {
   top: 50%;
   transform: translateY(-50%);
 }
-@media (max-width: 991px) {
-  .main-content .col-md-8 {
-    display: none;
-  }
+.main-content .col-md-8 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.main-content .col-md-8 h1 {
+  font-size: 48px;
+}
+.main-content .col-md-8 p {
+  font-size: 20px;
 }
 .main-content .col-md-4 {
   text-align: center;
