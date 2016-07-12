@@ -1,6 +1,18 @@
+var icons = {
+  directory: {
+    'private': 'folder',
+    'public': 'folder-o'
+  },
+  file: {
+    'private': 'file-text',
+    'public': 'file-o'
+  }
+}
+
 $(function() {
   var fileData = {};
   var rawPath = '';
+  var uploadCount = 0;
 
   // Load file data
   var getPath = function(structure) {
@@ -14,6 +26,27 @@ $(function() {
 
     rawPath = path;
     return 'children.' + path.replace(new RegExp('/', 'g'), '.children.');
+  };
+
+  var addFile = function(data, name) {
+    var html = '';
+    html += '<div class="file';
+    if (data.type == 'directory') html += ' folder';
+    html += '">';
+    var pathPrefix = rawPath ? (rawPath + '/') : '';
+    html += '<a href="#' + pathPrefix + name + '">';
+    html += '<span class="fa-stack fa-3x">';
+    html += '<span class="fa fa-stack-2x fa-';
+    html += icons[data.type][data.visibility];
+    html += '"></span>';
+    if (data.visibility == 'public') {
+      html += '<span class="fa fa-globe fa-stack-1x"></span>';
+    }
+    html += '</span>';
+    html += '<span class="desc">' + name + '</span>';
+    html += '</a>';
+    html += '</div>';
+    $('.files').append(html);
   };
 
   window.onhashchange = function() {
@@ -36,25 +69,13 @@ $(function() {
     });
     $('.breadcrumb').html(crumbHtml);
 
+    $('.files').html('');
     if (current.type == 'directory') {
-      var html = '';
-      _.each(current.children, function(child, name) {
-        html += '<div class="file';
-        if (child.type == 'directory') html += ' folder';
-        html += '">';
-        var pathPrefix = rawPath ? (rawPath + '/') : '';
-        html += '<a href="#' + pathPrefix + name + '">';
-        html += '<span class="fa fa-4x fa-';
-        html += child.type == 'directory' ? 'folder' : 'file-text';
-        html += '"></span>';
-        html += '<span class="desc">' + name + '</span>';
-        html += '</a>';
-        html += '</div>';
-      });
-      if (!html) {
-        html = 'This folder is empty.';
+      if (current.children.length <= 0) {
+        $('.files').html('This folder is empty.');
+      } else {
+        _.each(current.children, addFile);
       }
-      $('.files').html(html);
     } else {
       // TODO file preview/download
     }
@@ -68,6 +89,7 @@ $(function() {
       hoverClass: 'drop-hover',
       drop: function(event, ui) {
         // TODO put file in folder
+        ui.draggable.remove();
       }
     });
   };
@@ -95,10 +117,37 @@ $(function() {
     dropZone.css('visibility', 'hidden');
   });
 
-  var fileLoaded = function(file) {
+  var fileLoaded = function(file, progressElement) {
     return function(e) {
       var data = e.target.result;
-      // TODO
+      // TODO actually upload file
+      var intervalId = setInterval(function() {
+        var progress = parseInt(progressElement.attr('aria-valuenow'));
+        if (progress >= 100) {
+          // stop the interval
+          clearInterval(intervalId);
+          // remove this progress bar
+          progressElement.parent().remove();
+
+          // hide upload section if this is the last upload
+          uploadCount -= 1;
+          if (uploadCount <= 0) {
+            $('.upload').hide();
+          }
+
+          // show file in browser
+          addFile({
+            type: 'file',
+            visibility: 'private'
+          }, file.name);
+        } else {
+          // randomly advance progress bar
+          progress += 4 + parseInt(Math.random() * 4);
+          progressElement.attr('aria-valuenow', progress);
+          progressElement.css('width', progress + '%');
+          progressElement.html('<span class="sr-only">' + progress + '% Complete</span>');
+        }
+      }, 100);
     };
   };
 
@@ -108,8 +157,22 @@ $(function() {
 
     var files = e.originalEvent.dataTransfer.files;
     for (var i = 0; i < files.length; i++) {
+      var progHtml = '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progress-bar" aria-valuenow="0" aria-valuemin="0" area-valuemax="100">'
+      + '<span class="sr-only">0% Complete</span>'
+      + '</div>';
+      var progElem = $(progHtml);
+      var progWrapperHtml = '<div class="progress-wrapper"><span class="progress-name">'
+      + files[i].name
+      + '</span>'
+      + '<a href="#"><span class="fa fa-times"></span></a>'
+      + '</div>';
+      var progWrapper = $(progWrapperHtml);
+      progWrapper.prepend(progElem);
+      $('.upload').append(progWrapper).show();
+      uploadCount += 1;
+
       var fr = new FileReader();
-      fr.onload = fileLoaded(files[i]);
+      fr.onload = fileLoaded(files[i], progElem);
       fr.readAsDataURL(files[i]);
     }
   });
