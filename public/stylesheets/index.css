@@ -1,8 +1,11 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
 html, body {
   height: 100%;
 }
 body {
   color: #EEE;
+  font-family: 'Open Sans', sans-serif;
 }
 h1 {
   font-size: 48px;

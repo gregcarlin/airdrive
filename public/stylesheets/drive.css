@@ -1,5 +1,10 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
 html, body {
   height: 100%;
+}
+body {
+  font-family: 'Open Sans', sans-serif;
 }
 label {
   font-weight: 400;
