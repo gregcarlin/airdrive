@@ -52,6 +52,6 @@ module.exports.render = function(page, res, vars) {
   });
 };
 
-var getDb = module.exports.getDb = function(callback) {
+module.exports.getDb = function(callback) {
   mongoClient.connect('mongodb://' + config.database.host + ':' + config.database.port + '/' + config.database.name, callback);
 };
