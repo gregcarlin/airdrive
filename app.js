@@ -4,6 +4,7 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var compression = require('compression');
 // var minify = require('express-minify');
 
@@ -19,6 +20,7 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public/favicon.png')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(compression());
 // app.use(minify());
 app.use(express.static(path.join(__dirname, 'public')));
