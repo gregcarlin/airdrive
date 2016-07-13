@@ -58,10 +58,19 @@
         </p>
       </div>
       <div class="convert">
+        <div class="fail">
+          Please try again.
+        </div>
         <form method="post" action="/signup" class="signup">
-          <input type="email" class="form-control" name="email" placeholder="Enter email address" />
+          <input type="email" class="form-control" name="email" placeholder="Enter email address" required />
           <input type="submit" class="btn btn-primary" value="Get Early Access" />
         </form>
+        <div class="loading">
+          <span class="fa fa-spin fa-spinner"></span>
+        </div>
+        <div class="thanks">
+          You should receive an email shortly regarding our beta waiting list.
+        </div>
       </div>
     </div><!-- /.container -->
 
@@ -71,5 +80,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/21153cb4c1.js"></script>
+    <script src="/javascripts/index.js"></script>
   </body>
 </html>

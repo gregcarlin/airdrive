@@ -2,6 +2,9 @@
 
 var express = require('express');
 var _ = require('lodash');
+var mongoClient = require('mongodb').MongoClient;
+
+var config = require('../configuration.json');
 
 /*
  * Used to convert irregularly specified css and js data into a
@@ -47,4 +50,8 @@ module.exports.render = function(page, res, vars) {
 
     res.render('template', vars);
   });
+};
+
+var getDb = module.exports.getDb = function(callback) {
+  mongoClient.connect('mongodb://' + config.database.host + ':' + config.database.port + '/' + config.database.name, callback);
 };

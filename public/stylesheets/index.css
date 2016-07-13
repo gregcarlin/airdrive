@@ -37,12 +37,16 @@ body {
   color: #FFF;
 }
 
+.convert {
+  height: 120px;
+}
+.convert * {
+  font-size: 18px;
+}
+
 .signup {
   display: inline-block;
   width: 400px;
-}
-.signup > * {
-  font-size: 18px;
 }
 .signup input[type="email"] {
   text-align: center;
@@ -51,4 +55,16 @@ body {
 }
 .signup input[type="submit"] {
   padding: 8px 14px;
+}
+
+.fail {
+  color: #ffa3a3;
+  display: none;
+}
+.loading {
+  display: none;
+  font-size: 26px;
+}
+.thanks {
+  display: none;
 }
