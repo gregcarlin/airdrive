@@ -53,7 +53,7 @@ var files = {
       type: 'directory',
       visibility: 'public',
       children: {
-        'picture.jpg': {
+        'lenna.jpg': {
           type: 'file',
           visibility: 'public',
           data: ('<img src="data:image/png;base64,'

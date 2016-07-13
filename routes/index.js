@@ -121,8 +121,21 @@ router.post('/signup', function(req, res) {
 });
 
 router.get('/signout', function(req, res) {
-  // TODO handle signout
-  res.redirect('/');
+  res.clearCookie('hash');
+  core.getDb(function(err, db) {
+    if (err) {
+      console.log(err);
+      res.redirect('/');
+      return;
+    }
+
+    var sessions = db.collection('sessions');
+    sessions.removeOne({hash: req.cookies.hash}, function(err) {
+      if (err) console.log(err);
+
+      res.redirect('/');
+    });
+  });
 });
 
 router.get('/drive', function(req, res) {
