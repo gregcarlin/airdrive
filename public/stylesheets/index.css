@@ -4,6 +4,16 @@ html, body {
 body {
   color: #EEE;
 }
+h1 {
+  font-size: 48px;
+}
+h2 {
+  font-size: 24px;
+}
+h3 {
+  display: inline-block;
+  font-size: 48px;
+}
 
 .navbar {
   position: absolute;
@@ -37,12 +47,6 @@ body {
   background-image: url('/images/balloon.jpg');
   background-size: cover;
   background-position: center;
-}
-.main-content h1 {
-  font-size: 48px;
-}
-.main-content h2 {
-  font-size: 24px;
 }
 .main-content p {
   font-size: 20px;
@@ -114,16 +118,19 @@ body {
   font-size: 12em;
   margin-top: 10px;
 }
-#info h3 {
-  display: inline-block;
-  font-size: 48px;
+
+#details {
+  color: #EEE;
+  background-color: #75c4da;
+  text-shadow: 0 2px 5px #666;
 }
-#info p {
-  font-size: 18px;
-}
+
 .info-item {
   padding: 40px 10px;
 }
 .info-item-right {
   text-align: right;
+}
+.info-item p {
+  font-size: 18px;
 }
