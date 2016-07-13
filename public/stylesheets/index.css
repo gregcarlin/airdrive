@@ -20,40 +20,35 @@ body {
 }
 
 .main-content {
-  padding-top: 51px;
   height: 100%;
-}
-.main-content > .row {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.main-content .col-md-8 {
   text-align: center;
-  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
-.main-content .col-md-8 h1 {
+.main-content h1 {
   font-size: 48px;
 }
-.main-content .col-md-8 p {
+.main-content p {
   font-size: 20px;
 }
-.main-content .col-md-4 {
-  text-align: center;
+
+.grab {
+  color: #FFF;
 }
 
 .signup {
   display: inline-block;
+  width: 400px;
 }
-.signup label {
-  font-weight: 400;
-  display: block;
-  text-align: right;
+.signup > * {
+  font-size: 18px;
 }
-.signup label input {
-  width: 200px;
-  display: inline;
+.signup input[type="email"] {
+  text-align: center;
+  margin-bottom: 10px;
+  height: 40px;
 }
-.signup .btn {
-  margin-left: 58px;
+.signup input[type="submit"] {
+  padding: 8px 14px;
 }
