@@ -2,12 +2,14 @@ html, body {
   height: 100%;
 }
 body {
-  background-image: url('/images/balloon.jpg');
-  background-size: cover;
-  background-position: center;
   color: #EEE;
 }
 
+.navbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
 .navbar-brand {
   font-size: 32px;
   color: #EEE;
@@ -19,22 +21,38 @@ body {
   display: inline-block;
 }
 
+.section > * {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .main-content {
   height: 100%;
+  min-height: 600px;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  background-image: url('/images/balloon.jpg');
+  background-size: cover;
+  background-position: center;
 }
 .main-content h1 {
   font-size: 48px;
 }
+.main-content h2 {
+  font-size: 24px;
+}
 .main-content p {
   font-size: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .grab {
   color: #FFF;
+  text-shadow: 0 2px 5px #666;
 }
 
 .convert {
@@ -67,4 +85,45 @@ body {
 }
 .thanks {
   display: none;
+}
+
+.more {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.more a {
+  color: inherit;
+  font-size: 18px;
+}
+
+#info {
+  color: #333;
+  background-color: #fbfbfb;
+}
+#info .col-md-3 {
+  text-align: center;
+}
+@media (max-width: 991px) {
+  #info .col-md-3 {
+    display: none;
+  }
+}
+#info .fa {
+  display: inline-block;
+  font-size: 12em;
+  margin-top: 10px;
+}
+#info h3 {
+  display: inline-block;
+  font-size: 48px;
+}
+#info p {
+  font-size: 18px;
+}
+.info-item {
+  padding: 40px 10px;
+}
+.info-item-right {
+  text-align: right;
 }
