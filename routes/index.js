@@ -12,50 +12,55 @@ router.get('/', function(req, res) {
   res.render('index');
 });
 
+// login page
+router.get('/login', function(req, res) {
+  res.render('login');
+});
+
 router.post('/login', function(req, res) {
   var email = (req.body.email || '').trim();
   var pass = req.body.pass || '';
   if (!email || !pass) {
-    // TODO failed login
+    res.render('login', {error: 'You must submit both an email and a password.'});
     return;
   }
 
   core.getDb(function(err, db) {
     if (err) {
-      // TODO
+      res.render('login', {error: 'An unexpected error has occurred.'});
       return;
     }
 
     var users = db.collection('users');
     users.findOne({email: email}, function(err, user) {
       if (err) {
-        // TODO
+        res.render('login', {error: 'An unexpected error has occurred.'});
         db.close();
         return;
       }
 
       if (!user) {
-        // TODO
+        res.render('login', {error: 'An account with that email does not yet exist.'});
         db.close();
         return;
       }
 
       bcrypt.compare(pass, user.password, function(err, result) {
         if (err) {
-          // TODO
+          res.render('login', {error: 'An unexpected error has occurred.'});
           db.close();
           return;
         }
 
         if (!result) {
-          // TODO wrong password
+          res.render('login', {error: 'That password is incorrect.'});
           db.close();
           return;
         }
 
         crypto.randomBytes(64, function(err, buf) {
           if (err) {
-            // TODO
+            res.render('login', {error: 'An unexpected error has occurred.'});
             db.close();
           }
 
@@ -67,7 +72,7 @@ router.post('/login', function(req, res) {
           }, function(err) {
             db.close();
             if (err) {
-              // TODO
+              res.render('login', {error: 'An unexpected error has occurred.'});
               return;
             }
 
