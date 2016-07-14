@@ -105,7 +105,7 @@ $(function() {
   });
 
   // Set up full-page drag and drop file upload
-  var dropZone = $('.dropzone');
+  var dropZone = $('#dropzone');
 
   window.addEventListener('dragenter', function(e) {
     dropZone.css('visibility', 'visible');
@@ -123,86 +123,70 @@ $(function() {
   });
 
   // sets the progress value for a given progress element
-  var setProgress = function(progress, progressElement) {
+  var setProgress = function(progress, fileId) {
+    var progressElement = $('.progress-bar[data-uuid="' + fileId + '"]');
     progressElement.attr('aria-valuenow', progress);
     progressElement.css('width', progress + '%');
     progressElement.html('<span class="sr-only">' + progress + '% Complete</span>');
   };
 
-  // called on the progress callback of a js file read
-  var fileProgress = function(file, progressElement) {
-    return function(e) {
-      var progress = e.loaded / e.total * 50;
-      setProgress(progress, progressElement);
-    };
-  };
-
-  // called when js finishes reading a file
-  var fileLoaded = function(file, progressElement) {
-    return function(e) {
-      $.ajax({
-        xhr: function() {
-          var request = new window.XMLHttpRequest();
-          request.upload.addEventListener('progress', function(evt) {
-            if (evt.lengthComputable) {
-              setProgress(evt.loaded / evt.total * 100, progressElement);
-            }
-          }, false);
-          return request;
-        },
-        type: 'POST',
-        url: '/drive/upload',
-        data: {
-          file: e.target.result,
-          name: file.name
-        },
-        success: function(data) {
-          console.log('uploaded', data);
-
-          // remove this progress bar
-          progressElement.parent().remove();
-
-          // hide upload section if this is the last upload
-          uploadCount -= 1;
-          if (uploadCount <= 0) {
-            $('.upload').hide();
-          }
-
-          // show file in browser
-          addFile({
-            type: 'file',
-            visibility: 'private'
-          }, file.name);
-        }
-      });
-    };
-  };
+  var r = new Resumable({
+    target: '/drive/upload',
+    testChunks: false
+  });
+  if (!r.support) {
+    // TODO alert user of unsupported file upload
+  }
+  r.assignDrop(document.getElementById('dropzone'));
 
   dropZone.on('drop', function(e) {
     e.preventDefault();
     dropZone.css('visibility', 'hidden');
+  });
 
-    var files = e.originalEvent.dataTransfer.files;
-    for (var i = 0; i < files.length; i++) {
-      var progHtml = '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progress-bar" aria-valuenow="0" aria-valuemin="0" area-valuemax="100">'
-      + '<span class="sr-only">0% Complete</span>'
-      + '</div>';
-      var progElem = $(progHtml);
-      var progWrapperHtml = '<div class="progress-wrapper"><span class="progress-name">'
-      + files[i].name
-      + '</span>'
-      + '<a href="#"><span class="fa fa-times"></span></a>'
-      + '</div>';
-      var progWrapper = $(progWrapperHtml);
-      progWrapper.prepend(progElem);
-      $('.upload').append(progWrapper).show();
-      uploadCount += 1;
+  r.on('fileAdded', function(file) {
+    var progHtml = '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progress-bar" aria-valuenow="0" aria-valuemin="0" area-valuemax="100" data-uuid="' + file.uniqueIdentifier + '">'
+    + '<span class="sr-only">0% Complete</span>'
+    + '</div>';
+    var progElem = $(progHtml);
+    var progWrapperHtml = '<div class="progress-wrapper"><span class="progress-name">'
+    + file.fileName
+    + '</span>'
+    + '<a href="#"><span class="fa fa-times"></span></a>'
+    + '</div>';
+    var progWrapper = $(progWrapperHtml);
+    progWrapper.prepend(progElem);
+    $('.upload').append(progWrapper).show();
 
-      var fr = new FileReader();
-      fr.onprogress = fileProgress(files[i], progElem);
-      fr.onload = fileLoaded(files[i], progElem);
-      fr.readAsText(files[i], 'UTF-8');
+    uploadCount += 1;
+    r.upload();
+  });
+
+  r.on('fileProgress', function(file) {
+    setProgress(file.progress() * 100, file.uniqueIdentifier);
+  });
+
+  r.on('fileSuccess', function(file) {
+    // remove this progress bar
+    $('.progress-bar[data-uuid="' + file.uniqueIdentifier + '"]')
+      .parent().remove();
+
+    // hide upload section if this is the last upload
+    uploadCount -= 1;
+    if (uploadCount <= 0) {
+      $('.upload').hide();
     }
+
+    // show file in browser
+    addFile({
+      type: 'file',
+      visibility: 'private'
+    }, file.fileName);
+  });
+
+  r.on('fileError', function(file) {
+    // TODO handle error
+    console.log('error', file);
   });
 
   // Set up droppables

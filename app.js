@@ -3,6 +3,7 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
+var multipart = require('connect-multiparty');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var compression = require('compression');
@@ -18,6 +19,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(favicon(path.join(__dirname, 'public/favicon.png')));
+app.use(multipart());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());

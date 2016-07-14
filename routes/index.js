@@ -6,6 +6,7 @@ var bcrypt = require('bcrypt');
 var crypto = require('crypto');
 
 var core = require('./core');
+var resumable = require('./resumable-node')('tmp/');
 
 // home page
 router.get('/', function(req, res) {
@@ -187,9 +188,13 @@ router.get('/drive', function(req, res) {
 });
 
 router.post('/drive/upload', function(req, res) {
-  console.log(req.body.name);
-  console.log(req.body.data);
-  res.json({message: 'hi'});
+  resumable.post(req, function(status, filename, originalFilename, identifier) {
+    console.log('status', status);
+    console.log('filename', filename);
+    console.log('originalFilename', originalFilename);
+    console.log('id', identifier);
+    res.send(status);
+  });
 });
 
 module.exports = router;

@@ -11,6 +11,7 @@
     "bcrypt": "0.8.7",
     "body-parser": "1.15.2",
     "compression": "1.6.2",
+    "connect-multiparty": "2.0.0",
     "cookie-parser": "1.4.3",
     "debug": "2.2.0",
     "ejs": "2.4.2",
@@ -20,7 +21,8 @@
     "lodash": "4.13.1",
     "mongodb": "2.1.18",
     "nodemon": "1.9.2",
-    "serve-favicon": "2.3.0"
+    "serve-favicon": "2.3.0",
+    "storj": "1.4.0"
   },
   "devDependencies": {
     "eslint": "3.0.1",
