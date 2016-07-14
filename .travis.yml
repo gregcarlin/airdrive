@@ -8,3 +8,9 @@ before_script:
 script: npm run lint
 notifications:
   email: false
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
