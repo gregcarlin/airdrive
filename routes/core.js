@@ -3,6 +3,7 @@
 var express = require('express');
 var _ = require('lodash');
 var mongoClient = require('mongodb').MongoClient;
+var storj = require('storj');
 
 var config = require('../configuration.json');
 
@@ -55,3 +56,18 @@ module.exports.render = function(page, res, vars) {
 module.exports.getDb = function(callback) {
   mongoClient.connect('mongodb://' + config.database.host + ':' + config.database.port + '/' + config.database.name, callback);
 };
+
+module.exports.storj = new storj.BridgeClient('https://api.storj.io', {
+  keypair: new storj.KeyPair('47f2203fb54ef02815e954d732ba2d67f81f4bb4a9543b24b483fb0b68843972'),
+  logger: {
+    debug: console.log,
+    warn: console.log,
+    info: console.log,
+    error: console.log
+  },
+  concurrency: 8,
+  basicauth: {
+    email: 'team@hyperfeit.com',
+    password: 'airdrive'
+  }
+});

@@ -189,10 +189,16 @@ router.get('/drive', function(req, res) {
 
 router.post('/drive/upload', function(req, res) {
   resumable.post(req, function(status, filename, originalFilename, identifier) {
-    console.log('status', status);
-    console.log('filename', filename);
-    console.log('originalFilename', originalFilename);
-    console.log('id', identifier);
+    if (status === 'done') {
+      // TODO send to storj
+      core.storj.createBucket({
+        storage: 10,
+        transfer: 30,
+        name: 'Test bucket'
+      }, function(err) {
+        console.log(err);
+      });
+    }
     res.send(status);
   });
 });
