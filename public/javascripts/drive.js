@@ -122,15 +122,43 @@ $(function() {
     dropZone.css('visibility', 'hidden');
   });
 
+  // sets the progress value for a given progress element
+  var setProgress = function(progress, progressElement) {
+    progressElement.attr('aria-valuenow', progress);
+    progressElement.css('width', progress + '%');
+    progressElement.html('<span class="sr-only">' + progress + '% Complete</span>');
+  };
+
+  // called on the progress callback of a js file read
+  var fileProgress = function(file, progressElement) {
+    return function(e) {
+      var progress = e.loaded / e.total * 50;
+      setProgress(progress, progressElement);
+    };
+  };
+
+  // called when js finishes reading a file
   var fileLoaded = function(file, progressElement) {
     return function(e) {
-      // var data = e.target.result;
-      // TODO actually upload file
-      var intervalId = setInterval(function() {
-        var progress = parseInt(progressElement.attr('aria-valuenow'), 10);
-        if (progress >= 100) {
-          // stop the interval
-          clearInterval(intervalId);
+      $.ajax({
+        xhr: function() {
+          var request = new window.XMLHttpRequest();
+          request.upload.addEventListener('progress', function(evt) {
+            if (evt.lengthComputable) {
+              setProgress(evt.loaded / evt.total * 100, progressElement);
+            }
+          }, false);
+          return request;
+        },
+        type: 'POST',
+        url: '/drive/upload',
+        data: {
+          file: e.target.result,
+          name: file.name
+        },
+        success: function(data) {
+          console.log('uploaded', data);
+
           // remove this progress bar
           progressElement.parent().remove();
 
@@ -145,14 +173,8 @@ $(function() {
             type: 'file',
             visibility: 'private'
           }, file.name);
-        } else {
-          // randomly advance progress bar
-          progress += 4 + parseInt(Math.random() * 4, 10);
-          progressElement.attr('aria-valuenow', progress);
-          progressElement.css('width', progress + '%');
-          progressElement.html('<span class="sr-only">' + progress + '% Complete</span>');
         }
-      }, 100);
+      });
     };
   };
 
@@ -177,8 +199,9 @@ $(function() {
       uploadCount += 1;
 
       var fr = new FileReader();
+      fr.onprogress = fileProgress(files[i], progElem);
       fr.onload = fileLoaded(files[i], progElem);
-      fr.readAsDataURL(files[i]);
+      fr.readAsText(files[i], 'UTF-8');
     }
   });
 

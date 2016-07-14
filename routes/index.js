@@ -186,4 +186,10 @@ router.get('/drive', function(req, res) {
   });
 });
 
+router.post('/drive/upload', function(req, res) {
+  console.log(req.body.name);
+  console.log(req.body.data);
+  res.json({message: 'hi'});
+});
+
 module.exports = router;
