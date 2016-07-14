@@ -4,6 +4,7 @@ var express = require('express');
 var router = new express.Router();
 var bcrypt = require('bcrypt');
 var crypto = require('crypto');
+var fs = require('fs');
 
 var core = require('./core');
 var resumable = require('./resumable-node')('tmp/');
@@ -190,13 +191,25 @@ router.get('/drive', function(req, res) {
 router.post('/drive/upload', function(req, res) {
   resumable.post(req, function(status, filename, originalFilename, identifier) {
     if (status === 'done') {
-      // TODO send to storj
-      core.storj.createBucket({
-        storage: 10,
-        transfer: 30,
-        name: 'Test bucket'
-      }, function(err) {
-        console.log(err);
+      resumable.write(identifier, fs.createWriteStream('tmp/' + filename), {
+        onDone: function() {
+          core.storj.createToken('5787efd4e7caec094411af9b', 'PUSH', function(err, token) {
+            if (err) {
+              // TODO handle
+              return;
+            }
+
+            core.storj.storeFileInBucket('5787efd4e7caec094411af9b', token.token, 'tmp/' + filename, function(err, data) {
+              if (err) {
+                // TODO handle
+                return;
+              }
+
+              // TODO stuff
+              console.log('data', data);
+            });
+          });
+        }
       });
     }
     res.send(status);
