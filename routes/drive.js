@@ -4,6 +4,7 @@ var express = require('express');
 var router = new express.Router();
 var fs = require('fs');
 var path = require('path');
+var _ = require('lodash');
 
 var core = require('./core');
 var config = core.config;
@@ -54,12 +55,13 @@ router.post('/upload', function(req, res) {
           }
 
           // TODO put file in correct directory
-          files.root.children[filename] = {
+          files.root.children.push({
+            name: filename,
             type: 'file',
             visibility: 'private',
             status: 'uploading'
-          }
-          filesystem.updateOne({userId: req.userId}, {'$set': {root: files.root}}, {upsert: false}, function(err) {
+          });
+          filesystem.updateOne({userId: req.userId}, {$set: {root: files.root}}, {upsert: false}, function(err) {
             db.close();
             if (err) {
               // TODO
@@ -87,6 +89,11 @@ router.post('/upload', function(req, res) {
                 return;
               }
 
+              if (!data) {
+                // TODO try uploading again
+                return;
+              }
+
               core.getDb(function(err, db) {
                 if (err) {
                   // TODO
@@ -102,8 +109,12 @@ router.post('/upload', function(req, res) {
                   }
 
                   // TODO put file in correct directory
-                  files.root.children[filename].status = 'uploaded';
-                  // TODO add pointer to storj record
+                  var file = _.filter(files.root.children, _.matchesProperty('name', filename));
+                  if (!file) {
+                    // TODO this shouldn't happen
+                  }
+                  file.status = 'uploaded';
+                  file.storjId = data.id;
 
                   filesystem.updateOne({userId: req.userId}, {root: files.root}, {upsert: false}, function(err) {
                     db.close();

@@ -17,7 +17,7 @@ $(function() {
   var uploadCount = 0;
 
   // Load file data
-  var getPath = function(structure) {
+  var getPath = function() {
     rawPath = '';
 
     var hash = window.location.hash.trim();
@@ -26,17 +26,32 @@ $(function() {
     var path = hash.substring(1);
     if (!path) return '';
 
-    rawPath = path;
-    return '["children"]["' + path.split('/').join('"]["children"]["') + '"]';
+    return path;
+  };
+  var getAtPath = function(structure, fullPath) {
+    var traverse = function(path, struct) {
+      if (path.length === 0) return struct;
+
+      var next = _.find(struct.children, function(child) {
+        return child.name === path[0];
+      });
+      // TODO not found message?
+      if (!next) return struct;
+
+      return traverse(_.tail(path), next);
+    };
+
+    rawPath = fullPath;
+    return traverse(fullPath.split('/'), structure);
   };
 
-  var addFile = function(data, name) {
+  var addFile = function(data) {
     var html = '';
     html += '<div class="file';
     if (data.type === 'directory') html += ' folder';
     html += '">';
     var pathPrefix = rawPath ? (rawPath + '/') : '';
-    html += '<a href="#' + pathPrefix + name + '">';
+    html += '<a href="#' + pathPrefix + data.name + '">';
     html += '<span class="fa-stack fa-3x">';
     html += '<span class="fa fa-stack-2x fa-';
     html += icons[data.type][data.visibility];
@@ -46,7 +61,7 @@ $(function() {
     }
     html += '</span>';
     html += '<span class="desc">';
-    html += name;
+    html += data.name;
     html += '</span>';
     html += '</a>';
     html += '</div>';
@@ -54,8 +69,8 @@ $(function() {
   };
 
   window.onhashchange = function() {
-    var path = getPath(fileData);
-    var current = path ? _.property(path)(fileData) : fileData;
+    var path = getPath();
+    var current = getAtPath(fileData, path);
 
     var crumbs = rawPath.split('/');
     crumbs.unshift('airDrive');
@@ -80,6 +95,8 @@ $(function() {
         $('.files').html('');
         _.each(current.children, addFile);
       }
+    } else if (current.status === 'uploading') {
+      $('.files').html('<em>This file is still being uploaded to the network.</em>');
     } else {
       // TODO actually read file
       $('.files').html(current.data || '<em>This file is empty.</em>');
@@ -179,9 +196,10 @@ $(function() {
 
     // show file in browser
     addFile({
+      name: file.fileName,
       type: 'file',
       visibility: 'private'
-    }, file.fileName);
+    });
   });
 
   r.on('fileError', function(file) {
