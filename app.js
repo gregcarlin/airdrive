@@ -10,7 +10,8 @@ var compression = require('compression');
 // var minify = require('express-minify');
 
 var index = require('./routes/index');
-var storage = require('./routes/storage');
+var storage = require('./routes/storage'); // api-like direct data stuff
+var drive = require('./routes/drive'); // ui stuff
 
 var app = express();
 
@@ -36,6 +37,7 @@ app.use(function(req, res, next) {
 
 app.use('/', index);
 app.use('/data', storage);
+app.use('/drive', drive);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
