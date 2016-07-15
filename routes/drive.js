@@ -83,7 +83,6 @@ router.post('/upload', function(req, res) {
             }
 
             core.storj.storeFileInBucket('5787efd4e7caec094411af9b', token.token, filePath, function(err, data) {
-              console.log('data', data);
               if (err) {
                 // TODO handle
                 return;
@@ -109,14 +108,14 @@ router.post('/upload', function(req, res) {
                   }
 
                   // TODO put file in correct directory
-                  var file = _.filter(files.root.children, _.matchesProperty('name', filename));
+                  var file = _.find(files.root.children, _.matchesProperty('name', filename));
                   if (!file) {
                     // TODO this shouldn't happen
                   }
                   file.status = 'uploaded';
                   file.storjId = data.id;
 
-                  filesystem.updateOne({userId: req.userId}, {root: files.root}, {upsert: false}, function(err) {
+                  filesystem.updateOne({userId: req.userId}, {$set: {root: files.root}}, {upsert: false}, function(err) {
                     db.close();
                     if (err) {
                       // TODO
