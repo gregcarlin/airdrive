@@ -5,7 +5,7 @@ var _ = require('lodash');
 var mongoClient = require('mongodb').MongoClient;
 var storj = require('storj');
 
-var config = require('../configuration.json');
+var config = module.exports.config = require('../configuration.json');
 
 /*
  * Used to convert irregularly specified css and js data into a
