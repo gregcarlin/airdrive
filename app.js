@@ -9,6 +9,7 @@ var cookieParser = require('cookie-parser');
 var compression = require('compression');
 // var minify = require('express-minify');
 
+var core = require('./routes/core');
 var index = require('./routes/index');
 var storage = require('./routes/storage'); // api-like direct data stuff
 var drive = require('./routes/drive'); // ui stuff
@@ -35,9 +36,34 @@ app.use(function(req, res, next) {
   next();
 });
 
+// should be used in routes where authentication is required
+var auth = function(req, res, next) {
+  core.getDb(function(err, db) {
+    if (err) return next(err);
+
+    var sessions = db.collection('sessions');
+    sessions.findOne({hash: req.cookies.hash}, function(err, session) {
+      if (err) {
+        db.close();
+        return next(err);
+      }
+
+      if (!session) {
+        db.close();
+        res.redirect('/');
+        return;
+      }
+
+      req.userId = session.userId;
+      db.close();
+      next();
+    });
+  });
+};
+
 app.use('/', index);
-app.use('/data', storage);
-app.use('/drive', drive);
+app.use('/data', auth, storage);
+app.use('/drive', auth, drive);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -9,30 +9,6 @@ var core = require('./core');
 var config = core.config;
 var resumable = require('./resumable-node')(config.temporary_directory);
 
-router.use(function(req, res, next) {
-  core.getDb(function(err, db) {
-    if (err) return next(err);
-
-    var sessions = db.collection('sessions');
-    sessions.findOne({hash: req.cookies.hash}, function(err, session) {
-      if (err) {
-        db.close();
-        return next(err);
-      }
-
-      if (!session) {
-        db.close();
-        res.redirect('/');
-        return;
-      }
-
-      req.userId = session.userId;
-      db.close();
-      next();
-    });
-  });
-});
-
 router.get('/', function(req, res) {
   core.getDb(function(err, db) {
     if (err) {
