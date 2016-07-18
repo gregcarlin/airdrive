@@ -73,7 +73,7 @@ textarea {
   text-align: center;
   width: 20%;
   min-width: 100px;
-  min-height: 100px;
+  min-height: 120px;
   z-index: 1000;
 }
 .folder.drop-hover {

@@ -1,3 +1,4 @@
 *.min.*
 resumable-node.js
 resumable.js
+tmp/
