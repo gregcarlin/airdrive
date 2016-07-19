@@ -99,15 +99,13 @@ $(function() {
       $('.files').html('<em>This file is still being uploaded to the network.</em>');
     } else {
       $('.files').html('<em>Loading...</em>');
-      // TODO done and fail aren't called - bug?
-      $.fileDownload('/data/file/' + current.storjId)
-        .done(function() {
-          console.log('file download done');
-        })
-        .fail(function() {
-          // TODO
-          console.log('fail');
-        });
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/data/file/' + current.storjId, true);
+      xhr.responseType = 'blob';
+      xhr.onload = function(e) {
+        saveAs(this.response, current.name);
+      };
+      xhr.send();
     }
 
     // Set up drag and drops for files and folders

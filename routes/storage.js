@@ -34,10 +34,6 @@ router.get('/file/:id', function(req, res) {
       return;
     }
 
-    // TODO use actual filename
-    var filename = 'test.jpg';
-    res.set('Content-Disposition', 'attachment; filename=' + filename);
-    res.set('Content-Type', 'application/octet-stream');
     stream.pipe(res);
   });
 });
