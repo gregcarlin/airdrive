@@ -28,23 +28,17 @@ router.get('/', function(req, res) {
 
 // get specific file data
 router.get('/file/:id', function(req, res) {
-  core.storj.createToken('5787efd4e7caec094411af9b', 'PULL', function(err, token) {
+  core.storj.createFileStream('578e4b9d9e952c0b570690cc', req.params.id, function(err, stream) {
     if (err) {
       // TODO
       return;
     }
 
-    console.log('token', token);
-    console.log('fileId', req.params.id);
-    core.storj.getFilePointer('5787efd4e7caec094411af9b', token.token, req.params.id, function(err, data) {
-      if (err) {
-        // TODO
-        return;
-      }
-
-      console.log('data', data);
-      console.log('data[0]', data[0]);
-    });
+    // TODO use actual filename
+    var filename = 'test.jpg';
+    res.set('Content-Disposition', 'attachment; filename=' + filename);
+    res.set('Content-Type', 'application/octet-stream');
+    stream.pipe(res);
   });
 });
 

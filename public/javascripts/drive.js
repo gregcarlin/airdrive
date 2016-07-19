@@ -98,11 +98,16 @@ $(function() {
     } else if (current.status === 'uploading') {
       $('.files').html('<em>This file is still being uploaded to the network.</em>');
     } else {
-      $('.files').html(current.data || '<em>This file is empty.</em>');
-      $.get('/data/file/' + current.storjId, function(data) {
-        console.log('data', data);
-        // TODO actually read file
-      });
+      $('.files').html('<em>Loading...</em>');
+      // TODO done and fail aren't called - bug?
+      $.fileDownload('/data/file/' + current.storjId)
+        .done(function() {
+          console.log('file download done');
+        })
+        .fail(function() {
+          // TODO
+          console.log('fail');
+        });
     }
 
     // Set up drag and drops for files and folders

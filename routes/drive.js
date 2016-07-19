@@ -76,13 +76,13 @@ router.post('/upload', function(req, res) {
       var filePath = path.join(config.temporary_directory, filename);
       resumable.write(identifier, fs.createWriteStream(filePath), {
         onDone: function() {
-          core.storj.createToken('5787efd4e7caec094411af9b', 'PUSH', function(err, token) {
+          core.storj.createToken('578e4b9d9e952c0b570690cc', 'PUSH', function(err, token) {
             if (err) {
               // TODO handle
               return;
             }
 
-            core.storj.storeFileInBucket('5787efd4e7caec094411af9b', token.token, filePath, function(err, data) {
+            core.storj.storeFileInBucket('578e4b9d9e952c0b570690cc', token.token, filePath, function(err, data) {
               if (err) {
                 // TODO handle
                 return;
