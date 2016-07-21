@@ -1,5 +1,19 @@
 'use strict';
 
+// gets password from local storage
+// if absent, requests from user
+var getPass = function() {
+  if (localStorage.password) return localStorage.password;
+
+  var newPass = prompt('Please re-enter your password');
+  localStorage.password = newPass;
+  return newPass;
+};
+var pass2key = function(pass) {
+  return CryptoJS.PBKDF2(pass, '', {keySize: 256 / 32});
+};
+
+// font awesome icon ids
 var icons = {
   directory: {
     private: 'folder',
@@ -10,6 +24,17 @@ var icons = {
     public: 'file-o'
   }
 };
+
+// http://stackoverflow.com/a/21797381/720889
+function _base64ToArrayBuffer(base64) {
+    var binary_string =  window.atob(base64);
+    var len = binary_string.length;
+    var bytes = new Uint8Array( len );
+    for (var i = 0; i < len; i++)        {
+        bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
 
 $(function() {
   var fileData = {};
@@ -158,7 +183,8 @@ $(function() {
     testChunks: false
   });
   if (!r.support) {
-    // TODO alert user of unsupported file upload
+    alert('File uploads are not supported with this browser, please upgrade.');
+    return;
   }
   r.assignDrop(document.getElementById('dropzone'));
 
@@ -168,6 +194,7 @@ $(function() {
   });
 
   r.on('fileAdded', function(file) {
+    //console.log('file', file.file[0]);
     var progHtml = '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progress-bar" aria-valuenow="0" aria-valuemin="0" area-valuemax="100" data-uuid="' + file.uniqueIdentifier + '">'
     + '<span class="sr-only">0% Complete</span>'
     + '</div>';
@@ -180,9 +207,36 @@ $(function() {
     var progWrapper = $(progWrapperHtml);
     progWrapper.prepend(progElem);
     $('.upload').append(progWrapper).show();
-
     uploadCount += 1;
-    r.upload();
+
+    var iv = CryptoJS.enc.Hex.parse('TODO better iv');
+    var reader = new FileReader();
+    reader.onload = function() {
+      var wordArray = CryptoJS.lib.WordArray.create(reader.result);
+      console.log('wordArray', wordArray);
+      var encrypted = CryptoJS.AES.encrypt(wordArray, pass2key(getPass()), {iv: iv});
+      console.log('encrypted', encrypted);
+      var encBuf = _base64ToArrayBuffer(encrypted.ciphertext.toString(CryptoJS.enc.Base64));
+      console.log('encBuf', encBuf.byteLength);
+      var encWordArr = CryptoJS.lib.WordArray.create(encBuf);
+      console.log('encWordArr', encWordArr);
+      var encWordArrStr = encWordArr.toString(CryptoJS.enc.Base64);
+      console.log('encWordArrStr', encWordArrStr.length);
+      var decrypted = CryptoJS.AES.decrypt(encWordArrStr, pass2key(getPass()), {iv: iv});
+      console.log('decrypted', decrypted);
+      var newBuf = _base64ToArrayBuffer(decrypted.toString(CryptoJS.enc.Base64));
+
+      console.log('newBuf', newBuf.byteLength);
+      var file2 = new File([newBuf], file.file.name, {
+        lastModified: file.file.lastModified,
+        type: file.file.type
+      });
+      file.file = file2;
+      console.log('file2', file2);
+      r.upload();
+    }
+    console.log('file', file.file);
+    reader.readAsArrayBuffer(file.file);
   });
 
   r.on('fileProgress', function(file) {
@@ -209,8 +263,9 @@ $(function() {
   });
 
   r.on('fileError', function(file) {
-    // TODO handle error
     console.log('error', file);
+    alert('There was an issue uploading your file.'
+          + ' Please refresh the page and try again.');
   });
 
   // Set up droppables

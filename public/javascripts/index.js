@@ -20,4 +20,8 @@ $(function() {
       }
     });
   });
+
+  $('form.signin button[type="submit"]').click(function(e) {
+    localStorage.password = $('form.signin input[type="password"]').val();
+  });
 });

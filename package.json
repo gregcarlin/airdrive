@@ -22,7 +22,7 @@
     "mongodb": "2.1.18",
     "nodemon": "1.9.2",
     "serve-favicon": "2.3.0",
-    "storj": "2.0.0"
+    "storj": "2.0.2"
   },
   "devDependencies": {
     "eslint": "3.0.1",

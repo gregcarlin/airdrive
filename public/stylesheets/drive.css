@@ -127,6 +127,7 @@ textarea {
   padding: 8px;
   color: #444;
   display: none;
+  z-index: 1000;
 }
 .upload .progress-wrapper {
   clear: left;
