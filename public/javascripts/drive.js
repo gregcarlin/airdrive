@@ -133,18 +133,12 @@ $(function() {
         var fileReader = new FileReader();
         fileReader.onload = function() {
           var encWordArr = CryptoJS.lib.WordArray.create(this.result);
-          console.log('encWordArr', encWordArr);
           var encWordArrStr = encWordArr.toString(CryptoJS.enc.Base64);
-          console.log('encWordArrStr', encWordArrStr.length);
           var decrypted = CryptoJS.AES.decrypt(encWordArrStr, pass2key(getPass()), {iv: iv});
-          console.log('decrypted', decrypted);
           var newBuf = _base64ToArrayBuffer(decrypted.toString(CryptoJS.enc.Base64));
 
-          console.log('newBuf', newBuf.byteLength);
           var blob = new Blob([newBuf]);
           saveAs(blob, current.name);
-          //var file2 = new File([newBuf], file.file.name, {
-          //saveAs(this.response, current.name);
         };
         fileReader.readAsArrayBuffer(this.response);
       };
@@ -229,30 +223,17 @@ $(function() {
     var reader = new FileReader();
     reader.onload = function() {
       var wordArray = CryptoJS.lib.WordArray.create(reader.result);
-      //console.log('wordArray', wordArray);
       var encrypted = CryptoJS.AES.encrypt(wordArray, pass2key(getPass()), {iv: iv});
-      //console.log('encrypted', encrypted);
       var encBuf = _base64ToArrayBuffer(encrypted.ciphertext.toString(CryptoJS.enc.Base64));
-      //console.log('encBuf', encBuf.byteLength);
-      /*var encWordArr = CryptoJS.lib.WordArray.create(encBuf);
-      console.log('encWordArr', encWordArr);
-      var encWordArrStr = encWordArr.toString(CryptoJS.enc.Base64);
-      console.log('encWordArrStr', encWordArrStr.length);
-      var decrypted = CryptoJS.AES.decrypt(encWordArrStr, pass2key(getPass()), {iv: iv});
-      console.log('decrypted', decrypted);
-      var newBuf = _base64ToArrayBuffer(decrypted.toString(CryptoJS.enc.Base64));
 
-      console.log('newBuf', newBuf.byteLength);
-      var file2 = new File([newBuf], file.file.name, {*/
       var file2 = new File([encBuf], file.file.name, {
         lastModified: file.file.lastModified,
         type: file.file.type
       });
       file.file = file2;
-      //console.log('file2', file2);
+
       r.upload();
     }
-    //console.log('file', file.file);
     reader.readAsArrayBuffer(file.file);
   });
 
