@@ -8,7 +8,9 @@
     },
     "globals": {
       "_": true,
-      "Resumable": true
+      "Resumable": true,
+      "CryptoJS": true,
+      "saveAs": true
     },
     "rules": {
         "curly": [2, "multi-line"],

@@ -1,5 +1,9 @@
+tmp/
 *.min.*
+*-min.*
+
 resumable-node.js
 resumable.js
-tmp/
 jquery.fileDownload.js
+aes.js
+pbkdf2.js

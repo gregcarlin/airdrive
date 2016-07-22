@@ -28,15 +28,15 @@ var icons = {
 };
 
 // http://stackoverflow.com/a/21797381/720889
-function _base64ToArrayBuffer(base64) {
-    var binary_string =  window.atob(base64);
-    var len = binary_string.length;
-    var bytes = new Uint8Array( len );
-    for (var i = 0; i < len; i++)        {
-        bytes[i] = binary_string.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
+var _base64ToArrayBuffer = function(base64) {
+  var binaryString = window.atob(base64);
+  var len = binaryString.length;
+  var bytes = new Uint8Array(len);
+  for (var i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+};
 
 $(function() {
   var fileData = {};
@@ -233,7 +233,7 @@ $(function() {
       file.file = file2;
 
       r.upload();
-    }
+    };
     reader.readAsArrayBuffer(file.file);
   });
 
