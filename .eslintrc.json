@@ -15,6 +15,7 @@
     "rules": {
         "curly": [2, "multi-line"],
         "no-floating-decimal": 2,
-        "operator-linebreak": ["error", "before"]
+        "operator-linebreak": ["error", "before"],
+        "no-alert": 1
     }
 }

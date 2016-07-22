@@ -11,6 +11,7 @@ var getPass = function() {
 };
 var pass2key = function(pass) {
   // TODO use a salt?
+  // eslint-disable-next-line new-cap
   return CryptoJS.PBKDF2(pass, '', {keySize: 256 / 32});
 };
 var iv = CryptoJS.enc.Hex.parse('TODO better iv');
