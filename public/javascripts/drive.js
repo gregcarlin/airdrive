@@ -10,8 +10,10 @@ var getPass = function() {
   return newPass;
 };
 var pass2key = function(pass) {
+  // TODO use a salt?
   return CryptoJS.PBKDF2(pass, '', {keySize: 256 / 32});
 };
+var iv = CryptoJS.enc.Hex.parse('TODO better iv');
 
 // font awesome icon ids
 var icons = {
@@ -128,7 +130,23 @@ $(function() {
       xhr.open('GET', '/data/file/' + current.storjId, true);
       xhr.responseType = 'blob';
       xhr.onload = function(e) {
-        saveAs(this.response, current.name);
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+          var encWordArr = CryptoJS.lib.WordArray.create(this.result);
+          console.log('encWordArr', encWordArr);
+          var encWordArrStr = encWordArr.toString(CryptoJS.enc.Base64);
+          console.log('encWordArrStr', encWordArrStr.length);
+          var decrypted = CryptoJS.AES.decrypt(encWordArrStr, pass2key(getPass()), {iv: iv});
+          console.log('decrypted', decrypted);
+          var newBuf = _base64ToArrayBuffer(decrypted.toString(CryptoJS.enc.Base64));
+
+          console.log('newBuf', newBuf.byteLength);
+          var blob = new Blob([newBuf]);
+          saveAs(blob, current.name);
+          //var file2 = new File([newBuf], file.file.name, {
+          //saveAs(this.response, current.name);
+        };
+        fileReader.readAsArrayBuffer(this.response);
       };
       xhr.send();
     }
@@ -194,7 +212,6 @@ $(function() {
   });
 
   r.on('fileAdded', function(file) {
-    //console.log('file', file.file[0]);
     var progHtml = '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progress-bar" aria-valuenow="0" aria-valuemin="0" area-valuemax="100" data-uuid="' + file.uniqueIdentifier + '">'
     + '<span class="sr-only">0% Complete</span>'
     + '</div>';
@@ -209,16 +226,15 @@ $(function() {
     $('.upload').append(progWrapper).show();
     uploadCount += 1;
 
-    var iv = CryptoJS.enc.Hex.parse('TODO better iv');
     var reader = new FileReader();
     reader.onload = function() {
       var wordArray = CryptoJS.lib.WordArray.create(reader.result);
-      console.log('wordArray', wordArray);
+      //console.log('wordArray', wordArray);
       var encrypted = CryptoJS.AES.encrypt(wordArray, pass2key(getPass()), {iv: iv});
-      console.log('encrypted', encrypted);
+      //console.log('encrypted', encrypted);
       var encBuf = _base64ToArrayBuffer(encrypted.ciphertext.toString(CryptoJS.enc.Base64));
-      console.log('encBuf', encBuf.byteLength);
-      var encWordArr = CryptoJS.lib.WordArray.create(encBuf);
+      //console.log('encBuf', encBuf.byteLength);
+      /*var encWordArr = CryptoJS.lib.WordArray.create(encBuf);
       console.log('encWordArr', encWordArr);
       var encWordArrStr = encWordArr.toString(CryptoJS.enc.Base64);
       console.log('encWordArrStr', encWordArrStr.length);
@@ -227,15 +243,16 @@ $(function() {
       var newBuf = _base64ToArrayBuffer(decrypted.toString(CryptoJS.enc.Base64));
 
       console.log('newBuf', newBuf.byteLength);
-      var file2 = new File([newBuf], file.file.name, {
+      var file2 = new File([newBuf], file.file.name, {*/
+      var file2 = new File([encBuf], file.file.name, {
         lastModified: file.file.lastModified,
         type: file.file.type
       });
       file.file = file2;
-      console.log('file2', file2);
+      //console.log('file2', file2);
       r.upload();
     }
-    console.log('file', file.file);
+    //console.log('file', file.file);
     reader.readAsArrayBuffer(file.file);
   });
 

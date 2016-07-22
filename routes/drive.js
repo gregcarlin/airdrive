@@ -84,7 +84,9 @@ router.post('/upload', function(req, res) {
 
             core.storj.storeFileInBucket('578e4b9d9e952c0b570690cc', token.token, filePath, function(err, data) {
               if (err) {
+                console.log('storj error', err);
                 // TODO handle
+                // TODO retry storj upload
                 return;
               }
 
@@ -122,6 +124,7 @@ router.post('/upload', function(req, res) {
                     }
 
                     // nothing else to do
+                    // TODO update client with storj id
                   });
                 });
               });
