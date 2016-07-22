@@ -123,7 +123,6 @@ router.post('/upload', function(req, res) {
                       // TODO
                     }
 
-                    // nothing else to do
                     // TODO update client with storj id
                   });
                 });

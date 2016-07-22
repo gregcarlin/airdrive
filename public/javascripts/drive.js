@@ -253,12 +253,22 @@ $(function() {
       $('.upload').hide();
     }
 
-    // show file in browser
-    addFile({
+    var fileObj = {
       name: file.fileName,
       type: 'file',
       visibility: 'private'
-    });
+    };
+
+    // show file in browser
+    addFile(fileObj);
+
+    var current = getAtPath(fileData, getPath());
+    if (current.type === 'directory') {
+      if (!current.children) current.children = [];
+      current.children.push(fileObj);
+    } else {
+      // TODO put file data in parent of current
+    }
   });
 
   r.on('fileError', function(file) {
