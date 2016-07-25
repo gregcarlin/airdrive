@@ -75,7 +75,7 @@ var fileHelper = {
 
       if (!item) return null;
 
-      return traverse(_.tail(path), next);
+      return traverse(_.tail(path), item);
     };
 
     if (fullPath.length === 0) return null;
@@ -127,7 +127,7 @@ $(function() {
     var html = '';
     html += '<div class="file';
     if (data.type === 'directory') html += ' folder';
-    html += '">';
+    html += '" data-storj="' + data.storjId + '">';
     var pathPrefix = rawPath ? (rawPath + '/') : '';
     html += '<a href="#' + pathPrefix + data.name + '">';
     html += '<span class="fa-stack fa-3x">';
@@ -395,8 +395,15 @@ $(function() {
     });
   });
   $('.trash').on('drop', function(e, ui) {
-    ui.draggable.remove();
-    // TODO tell backend to delete file
+    $.ajax('/data/file/' + ui.draggable.attr('data-storj'), {
+      method: 'DELETE'
+    }, function(data) {
+      if (data.success) {
+        ui.draggable.remove();
+      } else {
+        error(data.message || 'We were unable to delete that at this time.');
+      }
+    });
   });
 
   $('#errorModal #reload').click(function() {

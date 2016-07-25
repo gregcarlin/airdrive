@@ -38,3 +38,19 @@ module.exports.getAtPath = function(structure, fullPath) {
 
   return traverse(fullPath.split('/'), structure);
 };
+
+// deletes a file with a given storj id, returns true if it existed
+module.exports.deleteById = function(storjId, fileSystem) {
+  var findAndDelete = function(files) {
+    if (!files.children) return false;
+
+    var childCount = files.children.length;
+    _.remove(files.children, _.matchesProperty('storjId', storjId));
+    if (files.children.length !== childCount) return true;
+
+    var next = _.filter(files.childern, _.matchesProperty('type', 'directory'));
+    return _.some(next, findAndDelete);
+  };
+
+  return findAndDelete(fileSystem);
+};

@@ -44,6 +44,49 @@ router.get('/file/:id', function(req, res, next) {
   });
 });
 
+// deletes a specific file
+router.delete('/file/:id', function(req, res, next) {
+  core.storj.removeFileFromBucket(bucket, req.params.id, function(err) {
+    // ignore storj errors
+
+    core.getDb(function(err, db) {
+      if (err) {
+        res.json({success: false});
+        return next(err);
+      }
+
+      var filesystem = db.collection('filesystem');
+      filesystem.findOne({userId: req.userId}, function(err, files) {
+        if (err) {
+          res.json({success: false});
+          db.close();
+          return next(err);
+        }
+
+        fileHelper.deleteById(req.params.id, files.root);
+
+        filesystem.updateOne({
+          userId: req.userId
+        }, {
+          $set: {
+            root: files.root
+          }
+        }, {
+          upsert: false
+        }, function(err) {
+          if (err) {
+            res.json({success: false});
+            db.close();
+            return next(err);
+          }
+
+          res.json({success: true});
+        });
+      });
+    });
+  });
+});
+
 // move a file or folder
 router.post('/move/', function(req, res, next) {
   core.getDb(function(err, db) {
@@ -56,6 +99,7 @@ router.post('/move/', function(req, res, next) {
     filesystem.findOne({userId: req.userId}, function(err, files) {
       if (err) {
         res.json({success: false});
+        db.close();
         return next(err);
       }
 
@@ -63,6 +107,7 @@ router.post('/move/', function(req, res, next) {
       var folder = fileHelper.getAtPath(files.root, req.body.to);
       if (folder.type !== 'directory') {
         res.json({success: false});
+        db.close();
         return;
       }
 
@@ -71,6 +116,7 @@ router.post('/move/', function(req, res, next) {
           success: false,
           message: 'That folder already contains a file with that name.'
         });
+        db.close();
         return;
       }
 
@@ -86,6 +132,7 @@ router.post('/move/', function(req, res, next) {
       }, {
         upsert: false
       }, function(err) {
+        db.close();
         if (err) {
           res.json({success: false});
           return next(err);
