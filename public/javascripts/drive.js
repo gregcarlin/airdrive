@@ -47,6 +47,44 @@ var error = function(message) {
   $('#errorModal').modal('show');
 };
 
+var fileHelper = {
+  getAtPath: function(structure, fullPath) {
+    var traverse = function(path, struct) {
+      if (path.length === 0) return struct;
+      if (path[0].length === 0) return traverse(_.tail(path), struct);
+
+      var next = _.find(struct.children, function(child) {
+        return child.name === path[0];
+      });
+      if (!next) return null;
+
+      return traverse(_.tail(path), next);
+    };
+
+    return traverse(fullPath.split('/'), structure);
+  },
+  deleteAtPath: function(structure, fullPath) {
+    var traverse = function(path, struct) {
+      var match = _.matchesProperty('name', path[0]);
+      var item = _.find(struct.children, match);
+
+      if (path.length === 1) {
+        _.remove(struct.children, match);
+        return item;
+      }
+
+      if (!item) return null;
+
+      return traverse(_.tail(path), next);
+    };
+
+    if (fullPath.length === 0) return null;
+    var split = _.filter(fullPath.split('/'), _.identity);
+    if (split.length === 0) return null;
+    return traverse(split, structure);
+  }
+};
+
 $(function() {
   var fileData = {};
   var rawPath = '';
@@ -83,26 +121,6 @@ $(function() {
     rawPath = fullPath;
     return traverse(fullPath.split('/'), structure);
   };
-  /* var deleteAtPath = function(structure, fullPath) {
-    var traverse = function(path, struct) {
-      var match = _.matchesProperty('name', path[0]);
-      var item = _.find(struct.children, match);
-
-      if (path.length === 1) {
-        _.remove(struct.children, match);
-        return item;
-      }
-
-      if (!item) return null;
-
-      return traverse(_.tail(path), next);
-    };
-
-    if (fullPath.length === 0) return null;
-    var split = _.filter(fullPath.split('/'), _.identity);
-    if (split.length === 0) return null;
-    return traverse(split, structure);
-  };*/
 
   // adds a file to the ui
   var addFile = function(data) {
@@ -189,13 +207,18 @@ $(function() {
     $('.folder').droppable({
       hoverClass: 'drop-hover',
       drop: function(event, ui) {
+        var from = $('a', ui.draggable).attr('href').substring(1);
+        var to = $('a', this).attr('href').substring(1);
         $.post('/data/move', {
-          from: $('a', ui.draggable).attr('href').substring(1),
-          to: $('a', this).attr('href').substring(1)
+          from: from,
+          to: to
         }, function(data) {
           if (data.success) {
             ui.draggable.remove();
-            // TODO put file in folder in fileData
+            var item = fileHelper.deleteAtPath(fileData, from);
+            var folder = fileHelper.getAtPath(fileData, to);
+            if (!folder.children) folder.children = [];
+            folder.children.push(item);
           } else {
             error(data.message || 'We were unable to move that at this time.');
           }
