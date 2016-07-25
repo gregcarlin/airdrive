@@ -83,7 +83,28 @@ $(function() {
     rawPath = fullPath;
     return traverse(fullPath.split('/'), structure);
   };
+  /* var deleteAtPath = function(structure, fullPath) {
+    var traverse = function(path, struct) {
+      var match = _.matchesProperty('name', path[0]);
+      var item = _.find(struct.children, match);
 
+      if (path.length === 1) {
+        _.remove(struct.children, match);
+        return item;
+      }
+
+      if (!item) return null;
+
+      return traverse(_.tail(path), next);
+    };
+
+    if (fullPath.length === 0) return null;
+    var split = _.filter(fullPath.split('/'), _.identity);
+    if (split.length === 0) return null;
+    return traverse(split, structure);
+  };*/
+
+  // adds a file to the ui
   var addFile = function(data) {
     var html = '';
     html += '<div class="file';
@@ -168,8 +189,17 @@ $(function() {
     $('.folder').droppable({
       hoverClass: 'drop-hover',
       drop: function(event, ui) {
-        // TODO put file in folder
-        ui.draggable.remove();
+        $.post('/data/move', {
+          from: $('a', ui.draggable).attr('href').substring(1),
+          to: $('a', this).attr('href').substring(1)
+        }, function(data) {
+          if (data.success) {
+            ui.draggable.remove();
+            // TODO put file in folder in fileData
+          } else {
+            error(data.message || 'We were unable to move that at this time.');
+          }
+        });
       }
     });
   };
