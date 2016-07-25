@@ -8,6 +8,7 @@ var _ = require('lodash');
 
 var core = require('./core');
 var config = core.config;
+var bucket = config.master_bucket;
 var resumable = require('./resumable-node')(config.temporary_directory);
 
 router.get('/', function(req, res) {
@@ -38,7 +39,15 @@ router.post('/upload', function(req, res, next) {
             visibility: 'private',
             status: 'uploading'
           });
-          filesystem.updateOne({userId: req.userId}, {$set: {root: files.root}}, {upsert: false}, function(err) {
+          filesystem.updateOne({
+            userId: req.userId
+          }, {
+            $set: {
+              root: files.root
+            }
+          }, {
+            upsert: false
+          }, function(err) {
             db.close();
             if (err) {
               err.handle = true;
@@ -53,13 +62,13 @@ router.post('/upload', function(req, res, next) {
       var filePath = path.join(config.temporary_directory, filename);
       resumable.write(identifier, fs.createWriteStream(filePath), {
         onDone: function() {
-          core.storj.createToken('578e4b9d9e952c0b570690cc', 'PUSH', function(err, token) {
+          core.storj.createToken(bucket, 'PUSH', function(err, token) {
             if (err) {
               err.handle = true;
               return next(err);
             }
 
-            core.storj.storeFileInBucket('578e4b9d9e952c0b570690cc', token.token, filePath, function(err, data) {
+            core.storj.storeFileInBucket(bucket, token.token, filePath, function(err, data) {
               if (err) {
                 // TODO retry storj upload
                 err.handle = true;
@@ -86,11 +95,20 @@ router.post('/upload', function(req, res, next) {
                   }
 
                   // TODO put file in correct directory
-                  var file = _.find(files.root.children, _.matchesProperty('name', filename));
+                  var isTheFile = _.matchesProperty('name', filename);
+                  var file = _.find(files.root.children, isTheFile);
                   file.status = 'uploaded';
                   file.storjId = data.id;
 
-                  filesystem.updateOne({userId: req.userId}, {$set: {root: files.root}}, {upsert: false}, function(err) {
+                  filesystem.updateOne({
+                    userId: req.userId
+                  }, {
+                    $set: {
+                      root: files.root
+                    }
+                  }, {
+                    upsert: false
+                  }, function(err) {
                     db.close();
                     if (err) {
                       err.handle = true;

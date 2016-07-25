@@ -14,6 +14,9 @@ var pass2key = function(pass) {
   // eslint-disable-next-line new-cap
   return CryptoJS.PBKDF2(pass, '', {keySize: 256 / 32});
 };
+var getKey = function() {
+  return pass2key(getPass());
+};
 var iv = CryptoJS.enc.Hex.parse('TODO better iv');
 
 // font awesome icon ids
@@ -37,6 +40,11 @@ var _base64ToArrayBuffer = function(base64) {
     bytes[i] = binaryString.charCodeAt(i);
   }
   return bytes.buffer;
+};
+
+var error = function(message) {
+  $('#errorModal .message').html(message);
+  $('#errorModal').modal('show');
 };
 
 $(function() {
@@ -65,8 +73,7 @@ $(function() {
         return child.name === path[0];
       });
       if (!next) {
-        $('#errorModal .message').html('This file could not be found.');
-        $('#errorModal').modal('show');
+        error('This file could not be found.');
         return struct;
       }
 
@@ -128,7 +135,8 @@ $(function() {
         _.each(current.children, addFile);
       }
     } else if (current.status === 'uploading') {
-      $('.files').html('<em>This file is still being uploaded to the network.</em>');
+      $('.files')
+        .html('<em>This file is still being uploaded to the network.</em>');
     } else {
       $('.files').html('<em>Loading...</em>');
       var xhr = new XMLHttpRequest();
@@ -139,8 +147,10 @@ $(function() {
         fileReader.onload = function() {
           var encWordArr = CryptoJS.lib.WordArray.create(this.result);
           var encWordArrStr = encWordArr.toString(CryptoJS.enc.Base64);
-          var decrypted = CryptoJS.AES.decrypt(encWordArrStr, pass2key(getPass()), {iv: iv});
-          var newBuf = _base64ToArrayBuffer(decrypted.toString(CryptoJS.enc.Base64));
+          var decrypted
+            = CryptoJS.AES.decrypt(encWordArrStr, getKey(), {iv: iv});
+          var newBuf
+            = _base64ToArrayBuffer(decrypted.toString(CryptoJS.enc.Base64));
 
           var blob = new Blob([newBuf]);
           saveAs(blob, current.name);
@@ -169,8 +179,7 @@ $(function() {
       fileData = data.files;
       window.onhashchange();
     } else {
-      $('#errorModal .message').html('Your files could not be loaded.');
-      $('#errorModal').modal('show');
+      error('Your files could not be loaded.');
     }
   });
 
@@ -197,7 +206,8 @@ $(function() {
     var progressElement = $('.progress-bar[data-uuid="' + fileId + '"]');
     progressElement.attr('aria-valuenow', progress);
     progressElement.css('width', progress + '%');
-    progressElement.html('<span class="sr-only">' + progress + '% Complete</span>');
+    progressElement.html('<span class="sr-only">'
+      + progress + '% Complete</span>');
   };
 
   var r = new Resumable({
@@ -205,7 +215,7 @@ $(function() {
     testChunks: false
   });
   if (!r.support) {
-    alert('File uploads are not supported with this browser, please upgrade.');
+    error('File uploads are not supported with this browser, please upgrade.');
     return;
   }
   r.assignDrop(document.getElementById('dropzone'));
@@ -216,11 +226,15 @@ $(function() {
   });
 
   r.on('fileAdded', function(file) {
-    var progHtml = '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progress-bar" aria-valuenow="0" aria-valuemin="0" area-valuemax="100" data-uuid="' + file.uniqueIdentifier + '">'
+    var progHtml = '<div '
+    + 'class="progress-bar progress-bar-success progress-bar-striped active" '
+    + 'role="progress-bar" aria-valuenow="0" aria-valuemin="0" '
+    + 'area-valuemax="100" data-uuid="' + file.uniqueIdentifier + '">'
     + '<span class="sr-only">0% Complete</span>'
     + '</div>';
     var progElem = $(progHtml);
-    var progWrapperHtml = '<div class="progress-wrapper"><span class="progress-name">'
+    var progWrapperHtml = '<div class="progress-wrapper">'
+    + '<span class="progress-name">'
     + file.fileName
     + '</span>'
     + '<a href="#"><span class="fa fa-times"></span></a>'
@@ -233,7 +247,7 @@ $(function() {
     var reader = new FileReader();
     reader.onload = function() {
       var wordArray = CryptoJS.lib.WordArray.create(reader.result);
-      var encrypted = CryptoJS.AES.encrypt(wordArray, pass2key(getPass()), {iv: iv});
+      var encrypted = CryptoJS.AES.encrypt(wordArray, getKey(), {iv: iv});
       var encBuf = _base64ToArrayBuffer(encrypted.ciphertext.toString(CryptoJS.enc.Base64));
 
       var file2 = new File([encBuf], file.file.name, {
@@ -282,7 +296,7 @@ $(function() {
 
   r.on('fileError', function(file) {
     console.log('error', file);
-    alert('There was an issue uploading your file.'
+    error('There was an issue uploading your file.'
           + ' Please refresh the page and try again.');
   });
 

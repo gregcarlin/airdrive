@@ -21,7 +21,9 @@ router.post('/login', function(req, res) {
   var email = (req.body.email || '').trim();
   var pass = req.body.pass || '';
   if (!email || !pass) {
-    res.render('login', {error: 'You must submit both an email and a password.'});
+    res.render('login', {
+      error: 'You must submit both an email and a password.'
+    });
     return;
   }
 
@@ -40,7 +42,9 @@ router.post('/login', function(req, res) {
       }
 
       if (!user) {
-        res.render('login', {error: 'An account with that email does not yet exist.'});
+        res.render('login', {
+          error: 'An account with that email does not yet exist.'
+        });
         db.close();
         return;
       }

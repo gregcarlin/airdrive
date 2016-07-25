@@ -6,5 +6,6 @@
     "username": "",
     "password": ""
   },
-  "temporary_directory": "tmp/"
+  "temporary_directory": "tmp/",
+  "master_bucket": "578e4b9d9e952c0b570690cc"
 }
