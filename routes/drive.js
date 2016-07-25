@@ -11,47 +11,24 @@ var config = core.config;
 var resumable = require('./resumable-node')(config.temporary_directory);
 
 router.get('/', function(req, res) {
-  core.getDb(function(err, db) {
-    if (err) {
-      // TODO
-      return;
-    }
-
-    var users = db.collection('users');
-    users.findOne({_id: req.userId}, function(err, user) {
-      db.close();
-
-      if (err) {
-        // TODO
-        return;
-      }
-
-      if (!user) {
-        // TODO
-        return;
-      }
-
-      // TODO load user-specific data
-      res.render('drive');
-    });
-  });
+  res.render('drive');
 });
 
-router.post('/upload', function(req, res) {
+router.post('/upload', function(req, res, next) {
   resumable.post(req, function(status, filename, originalFilename, identifier) {
     if (status === 'done') {
       core.getDb(function(err, db) {
         if (err) {
-          // TODO
-          return;
+          err.handle = true;
+          return next(err);
         }
 
         var filesystem = db.collection('filesystem');
         filesystem.findOne({userId: req.userId}, function(err, files) {
           if (err) {
-            // TODO
             db.close();
-            return;
+            err.handle = true;
+            return next(err);
           }
 
           // TODO put file in correct directory
@@ -64,8 +41,8 @@ router.post('/upload', function(req, res) {
           filesystem.updateOne({userId: req.userId}, {$set: {root: files.root}}, {upsert: false}, function(err) {
             db.close();
             if (err) {
-              // TODO
-              console.log('1', err);
+              err.handle = true;
+              return next(err);
             }
 
             // nothing else to do
@@ -78,49 +55,46 @@ router.post('/upload', function(req, res) {
         onDone: function() {
           core.storj.createToken('578e4b9d9e952c0b570690cc', 'PUSH', function(err, token) {
             if (err) {
-              // TODO handle
-              return;
+              err.handle = true;
+              return next(err);
             }
 
             core.storj.storeFileInBucket('578e4b9d9e952c0b570690cc', token.token, filePath, function(err, data) {
               if (err) {
-                console.log('storj error', err);
-                // TODO handle
                 // TODO retry storj upload
-                return;
+                err.handle = true;
+                return next(err);
               }
 
               if (!data) {
-                // TODO try uploading again
+                // TODO retry storj upload
                 return;
               }
 
               core.getDb(function(err, db) {
                 if (err) {
-                  // TODO
-                  return;
+                  err.handle = true;
+                  return next(err);
                 }
 
                 var filesystem = db.collection('filesystem');
                 filesystem.findOne({userId: req.userId}, function(err, files) {
                   if (err) {
-                    // TODO
                     db.close();
-                    return;
+                    err.handle = true;
+                    return next(err);
                   }
 
                   // TODO put file in correct directory
                   var file = _.find(files.root.children, _.matchesProperty('name', filename));
-                  if (!file) {
-                    // TODO this shouldn't happen
-                  }
                   file.status = 'uploaded';
                   file.storjId = data.id;
 
                   filesystem.updateOne({userId: req.userId}, {$set: {root: files.root}}, {upsert: false}, function(err) {
                     db.close();
                     if (err) {
-                      // TODO
+                      err.handle = true;
+                      return next(err);
                     }
 
                     // TODO update client with storj id

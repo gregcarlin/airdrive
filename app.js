@@ -78,7 +78,7 @@ app.use(function(err, req, res, next) {
 
   console.error(err);
   console.error(err.stack);
-  if (!err.handled) {
+  if (err.handle) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,

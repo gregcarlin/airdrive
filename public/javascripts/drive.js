@@ -59,12 +59,16 @@ $(function() {
   var getAtPath = function(structure, fullPath) {
     var traverse = function(path, struct) {
       if (path.length === 0) return struct;
+      if (path[0].length === 0) return traverse(_.tail(path), struct);
 
       var next = _.find(struct.children, function(child) {
         return child.name === path[0];
       });
-      // TODO not found message?
-      if (!next) return struct;
+      if (!next) {
+        $('#errorModal .message').html('This file could not be found.');
+        $('#errorModal').modal('show');
+        return struct;
+      }
 
       return traverse(_.tail(path), next);
     };
@@ -161,8 +165,13 @@ $(function() {
   };
 
   $.get('/data', function(data) {
-    fileData = data;
-    window.onhashchange();
+    if (data.success) {
+      fileData = data.files;
+      window.onhashchange();
+    } else {
+      $('#errorModal .message').html('Your files could not be loaded.');
+      $('#errorModal').modal('show');
+    }
   });
 
   // Set up full-page drag and drop file upload
@@ -321,5 +330,9 @@ $(function() {
   $('.trash').on('drop', function(e, ui) {
     ui.draggable.remove();
     // TODO tell backend to delete file
+  });
+
+  $('#errorModal #reload').click(function() {
+    location.reload();
   });
 });

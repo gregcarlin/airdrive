@@ -6,32 +6,35 @@ var router = new express.Router();
 var core = require('./core');
 
 // get the user's filesystem
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
   core.getDb(function(err, db) {
     if (err) {
-      // TODO
-      return;
+      res.json({success: false});
+      return next(err);
     }
 
     var filesystem = db.collection('filesystem');
     filesystem.findOne({userId: req.userId}, function(err, files) {
       db.close();
       if (err) {
-        // TODO
-        return;
+        res.json({success: false});
+        return next(err);
       }
 
-      res.json(files.root);
+      res.json({
+        success: true,
+        files: files.root
+      });
     });
   });
 });
 
 // get specific file data
-router.get('/file/:id', function(req, res) {
+router.get('/file/:id', function(req, res, next) {
   core.storj.createFileStream('578e4b9d9e952c0b570690cc', req.params.id, function(err, stream) {
     if (err) {
-      // TODO
-      return;
+      res.sendStatus(404);
+      return next(err);
     }
 
     stream.pipe(res);
